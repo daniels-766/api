@@ -1,0 +1,478 @@
+openapi: 3.0.0
+info:
+  title: Uatas Content API
+  description: API CRUD for Logo, Banner, Mitra, Money Report, Director, Shareholders, dan Riplay.
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:5000/api
+
+paths:
+
+  ##############################
+  # LOGO
+  ##############################
+  /logo:
+    get:
+      summary: Get all logo
+      tags: [Logo]
+      responses:
+        "200":
+          description: List of logo
+    post:
+      summary: Create logo
+      tags: [Logo]
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                image:
+                  type: string
+                  format: binary
+      responses:
+        "201":
+          description: Logo created
+
+  /logo/{id}:
+    get:
+      summary: Get logo by ID
+      tags: [Logo]
+      parameters:
+        - in: path
+          name: id
+          required: true
+      responses:
+        "200":
+          description: Logo detail
+    put:
+      summary: Update logo
+      tags: [Logo]
+      parameters:
+        - in: path
+          name: id
+          required: true
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                image:
+                  type: string
+                  format: binary
+      responses:
+        "200":
+          description: Logo updated
+    delete:
+      summary: Delete logo
+      tags: [Logo]
+      parameters:
+        - in: path
+          name: id
+          required: true
+      responses:
+        "200":
+          description: Logo deleted
+
+  ##############################
+  # BANNER
+  ##############################
+  /banner:
+    get:
+      summary: Get all banner
+      tags: [Banner]
+      responses:
+        "200":
+          description: List of banner
+    post:
+      summary: Create banner
+      tags: [Banner]
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                image:
+                  type: string
+                  format: binary
+      responses:
+        "201":
+          description: Banner created
+
+  /banner/{id}:
+    put:
+      summary: Update banner
+      tags: [Banner]
+      parameters:
+        - in: path
+          name: id
+          required: true
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                image:
+                  type: string
+                  format: binary
+      responses:
+        "200":
+          description: Banner updated
+    delete:
+      summary: Delete banner
+      tags: [Banner]
+      parameters:
+        - in: path
+          name: id
+          required: true
+      responses:
+        "200":
+          description: Banner deleted
+
+  ##############################
+  # MITRA
+  ##############################
+  /mitra:
+    get:
+      summary: Get all mitra
+      tags: [Mitra]
+      responses:
+        "200":
+          description: List of mitra
+    post:
+      summary: Create mitra
+      tags: [Mitra]
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                link:
+                  type: string
+                desc:
+                  type: string
+                image:
+                  type: string
+                  format: binary
+      responses:
+        "201":
+          description: Mitra created
+
+  /mitra/{id}:
+    put:
+      summary: Update mitra
+      tags: [Mitra]
+      parameters:
+        - in: path
+          name: id
+          required: true
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                link:
+                  type: string
+                desc:
+                  type: string
+                image:
+                  type: string
+                  format: binary
+      responses:
+        "200":
+          description: Mitra updated
+    delete:
+      summary: Delete mitra
+      tags: [Mitra]
+      parameters:
+        - in: path
+          name: id
+          required: true
+      responses:
+        "200":
+          description: Mitra deleted
+
+  ##############################
+  # REPORT-1
+  ##############################
+  /report-1:
+    get:
+      summary: Get all report-1
+      tags: [Report-1]
+      responses:
+        "200":
+          description: List of report-1
+    post:
+      summary: Create report-1 (PDF)
+      tags: [Report-1]
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                file:
+                  type: string
+                  format: binary
+      responses:
+        "201":
+          description: Report created
+
+  /report-1/{id}:
+    put:
+      summary: Update report-1
+      tags: [Report-1]
+      parameters:
+        - in: path
+          name: id
+          required: true
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                file:
+                  type: string
+                  format: binary
+      responses:
+        "200":
+          description: Report updated
+    delete:
+      summary: Delete report-1
+      tags: [Report-1]
+      parameters:
+        - in: path
+          name: id
+          required: true
+      responses:
+        "200":
+          description: Report deleted
+
+  ##############################
+  # DIRECTOR
+  ##############################
+  /director:
+    get:
+      summary: Get all directors
+      tags: [Director]
+      responses:
+        "200":
+          description: List of directors
+    post:
+      summary: Create director
+      tags: [Director]
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                position:
+                  type: string
+                desc:
+                  type: string
+                image:
+                  type: string
+                  format: binary
+      responses:
+        "201":
+          description: Director created
+
+  /director/{id}:
+    put:
+      summary: Update director
+      tags: [Director]
+      parameters:
+        - in: path
+          name: id
+          required: true
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                position:
+                  type: string
+                desc:
+                  type: string
+                image:
+                  type: string
+                  format: binary
+      responses:
+        "200":
+          description: Director updated
+    delete:
+      summary: Delete director
+      tags: [Director]
+      parameters:
+        - in: path
+          name: id
+          required: true
+      responses:
+        "200":
+          description: Director deleted
+
+  ##############################
+  # SHAREHOLDERS
+  ##############################
+  /shareholders:
+    get:
+      summary: Get all shareholders
+      tags: [Shareholders]
+      responses:
+        "200":
+          description: List of shareholders
+    post:
+      summary: Create shareholder
+      tags: [Shareholders]
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                position:
+                  type: string
+                desc:
+                  type: string
+                image:
+                  type: string
+                  format: binary
+      responses:
+        "201":
+          description: Shareholder created
+
+  /shareholders/{id}:
+    put:
+      summary: Update shareholder
+      tags: [Shareholders]
+      parameters:
+        - in: path
+          name: id
+          required: true
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                position:
+                  type: string
+                desc:
+                  type: string
+                image:
+                  type: string
+                  format: binary
+      responses:
+        "200":
+          description: Shareholder updated
+    delete:
+      summary: Delete shareholder
+      tags: [Shareholders]
+      parameters:
+        - in: path
+          name: id
+          required: true
+      responses:
+        "200":
+          description: Shareholder deleted
+
+  ##############################
+  # RIPLAY
+  ##############################
+  /riplay:
+    get:
+      summary: Get all riplay data
+      tags: [Riplay]
+      responses:
+        "200":
+          description: List of riplay
+    post:
+      summary: Create riplay (PDF)
+      tags: [Riplay]
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                file:
+                  type: string
+                  format: binary
+      responses:
+        "201":
+          description: Riplay created
+
+  /riplay/{id}:
+    put:
+      summary: Update riplay
+      tags: [Riplay]
+      parameters:
+        - in: path
+          name: id
+          required: true
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                file:
+                  type: string
+                  format: binary
+      responses:
+        "200":
+          description: Riplay updated
+    delete:
+      summary: Delete riplay
+      tags: [Riplay]
+      parameters:
+        - in: path
+          name: id
+          required: true
+      responses:
+        "200":
+          description: Riplay deleted

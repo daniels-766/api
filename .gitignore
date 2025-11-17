@@ -1,0 +1,7 @@
+uploads/images/
+uploads/pdf/
+migrations/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
