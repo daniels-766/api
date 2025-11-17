@@ -12,17 +12,14 @@ from flask_migrate import Migrate
 app = create_app()
 migrate = Migrate(app, db)
 
-# INIT DATABASE HERE
 with app.app_context():
     db.create_all()
 
-# SWAGGER
 SWAGGER_URL = "/docs"
 API_URL = "/static/swagger.yaml"
 swagger_ui = get_swaggerui_blueprint(SWAGGER_URL, API_URL)
 app.register_blueprint(swagger_ui, url_prefix=SWAGGER_URL)
 
-# ROUTES
 app.register_blueprint(logo_bp, url_prefix="/api")
 app.register_blueprint(banner_bp, url_prefix="/api")
 app.register_blueprint(mitra_bp, url_prefix="/api")
@@ -32,4 +29,4 @@ app.register_blueprint(shareholders_bp, url_prefix="/api")
 app.register_blueprint(riplay_bp, url_prefix="/api")
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5000)
+    app.run(debug=True, port=5003, host='0.0.0.0')
