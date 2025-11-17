@@ -1,55 +1,72 @@
-import os
-from flask import Blueprint, request, jsonify, current_app
+from flask import Blueprint, request, jsonify, send_file
 from models.logo import Logo
 from config import db
+from io import BytesIO
 
 logo_bp = Blueprint("logo", __name__)
+
+@logo_bp.route("/logo", methods=["GET"])
+def get_logos():
+    data = Logo.query.all()
+    return jsonify([
+        {
+            "id": d.id,
+            "name": d.name,
+            "image_url": f"/api/logo/{d.id}/image"
+        }
+        for d in data
+    ])
+
 
 @logo_bp.route("/logo", methods=["POST"])
 def create_logo():
     name = request.form.get("name")
     image = request.files.get("image")
 
-    filename = None
-    if image:
-        filename = image.filename
-        save_path = os.path.join(current_app.config["UPLOAD_FOLDER_IMAGES"], filename)
-        image.save(save_path)
+    image_data = image.read() if image else None
+    image_mime = image.mimetype if image else None
 
-    logo = Logo(name=name, image=filename)
-    db.session.add(logo)
+    record = Logo(name=name, image=image_data, image_mime=image_mime)
+    db.session.add(record)
     db.session.commit()
 
-    return jsonify({"message": "created", "id": logo.id}), 201
-
-
-@logo_bp.route("/logo", methods=["GET"])
-def get_logo_all():
-    data = Logo.query.all()
-    result = [{"id": i.id, "name": i.name, "image": i.image} for i in data]
-    return jsonify(result)
+    return jsonify({"message": "created", "id": record.id}), 201
 
 
 @logo_bp.route("/logo/<int:id>", methods=["GET"])
 def get_logo(id):
-    i = Logo.query.get_or_404(id)
-    return jsonify({"id": i.id, "name": i.name, "image": i.image})
+    d = Logo.query.get_or_404(id)
+    return jsonify({
+        "id": d.id,
+        "name": d.name,
+        "image_url": f"/api/logo/{id}/image"
+    })
+
+
+@logo_bp.route("/logo/<int:id>/image", methods=["GET"])
+def get_logo_image(id):
+    d = Logo.query.get_or_404(id)
+    if not d.image:
+        return jsonify({"error": "No image"}), 404
+
+    return send_file(
+        BytesIO(d.image),
+        mimetype=d.image_mime,
+        as_attachment=False
+    )
 
 
 @logo_bp.route("/logo/<int:id>", methods=["PUT"])
 def update_logo(id):
-    logo = Logo.query.get_or_404(id)
+    d = Logo.query.get_or_404(id)
     name = request.form.get("name")
     image = request.files.get("image")
 
     if name:
-        logo.name = name
-
+        d.name = name
     if image:
-        filename = image.filename
-        save_path = os.path.join(current_app.config["UPLOAD_FOLDER_IMAGES"], filename)
-        image.save(save_path)
-        logo.image = filename
+        d.image = image.read()
+        d.image_mime = image.mimetype
 
     db.session.commit()
     return jsonify({"message": "updated"})
@@ -57,13 +74,7 @@ def update_logo(id):
 
 @logo_bp.route("/logo/<int:id>", methods=["DELETE"])
 def delete_logo(id):
-    logo = Logo.query.get_or_404(id)
-
-    if logo.image:
-        path = os.path.join(current_app.config["UPLOAD_FOLDER_IMAGES"], logo.image)
-        if os.path.exists(path):
-            os.remove(path)
-
-    db.session.delete(logo)
+    d = Logo.query.get_or_404(id)
+    db.session.delete(d)
     db.session.commit()
     return jsonify({"message": "deleted"})

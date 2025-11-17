@@ -1,9 +1,24 @@
-import os
-from flask import Blueprint, request, jsonify, current_app
+from flask import Blueprint, request, jsonify, send_file
 from models.mitra import Mitra
 from config import db
+from io import BytesIO
 
 mitra_bp = Blueprint("mitra", __name__)
+
+@mitra_bp.route("/mitra", methods=["GET"])
+def get_all_mitra():
+    data = Mitra.query.all()
+    return jsonify([
+        {
+            "id": d.id,
+            "name": d.name,
+            "link": d.link,
+            "desc": d.desc,
+            "image_url": f"/api/mitra/{d.id}/image"
+        }
+        for d in data
+    ])
+
 
 @mitra_bp.route("/mitra", methods=["POST"])
 def create_mitra():
@@ -12,48 +27,50 @@ def create_mitra():
     desc = request.form.get("desc")
     image = request.files.get("image")
 
-    filename = None
-    if image:
-        filename = image.filename
-        save_path = os.path.join(current_app.config["UPLOAD_FOLDER_IMAGES"], filename)
-        image.save(save_path)
+    image_data = image.read() if image else None
+    image_mime = image.mimetype if image else None
 
-    record = Mitra(name=name, link=link, desc=desc, image=filename)
-    db.session.add(record)
+    d = Mitra(
+        name=name,
+        link=link,
+        desc=desc,
+        image=image_data,
+        image_mime=image_mime
+    )
+    db.session.add(d)
     db.session.commit()
 
-    return jsonify({"message": "created", "id": record.id}), 201
+    return jsonify({"message": "created", "id": d.id}), 201
 
 
-@mitra_bp.route("/mitra", methods=["GET"])
-def get_all_mitra():
-    data = Mitra.query.all()
-    return jsonify([
-        {"id": i.id, "name": i.name, "image": i.image, "link": i.link, "desc": i.desc}
-        for i in data
-    ])
+@mitra_bp.route("/mitra/<int:id>/image", methods=["GET"])
+def get_mitra_image(id):
+    d = Mitra.query.get_or_404(id)
+    if not d.image:
+        return jsonify({"error": "No image"}), 404
+
+    return send_file(
+        BytesIO(d.image),
+        mimetype=d.image_mime,
+        as_attachment=False
+    )
 
 
 @mitra_bp.route("/mitra/<int:id>", methods=["PUT"])
 def update_mitra(id):
-    record = Mitra.query.get_or_404(id)
+    d = Mitra.query.get_or_404(id)
+
     name = request.form.get("name")
     link = request.form.get("link")
     desc = request.form.get("desc")
     image = request.files.get("image")
 
-    if name:
-        record.name = name
-    if link:
-        record.link = link
-    if desc:
-        record.desc = desc
-
+    if name: d.name = name
+    if link: d.link = link
+    if desc: d.desc = desc
     if image:
-        filename = image.filename
-        save_path = os.path.join(current_app.config["UPLOAD_FOLDER_IMAGES"], filename)
-        image.save(save_path)
-        record.image = filename
+        d.image = image.read()
+        d.image_mime = image.mimetype
 
     db.session.commit()
     return jsonify({"message": "updated"})
@@ -61,13 +78,7 @@ def update_mitra(id):
 
 @mitra_bp.route("/mitra/<int:id>", methods=["DELETE"])
 def delete_mitra(id):
-    record = Mitra.query.get_or_404(id)
-
-    if record.image:
-        path = os.path.join(current_app.config["UPLOAD_FOLDER_IMAGES"], record.image)
-        if os.path.exists(path):
-            os.remove(path)
-
-    db.session.delete(record)
+    d = Mitra.query.get_or_404(id)
+    db.session.delete(d)
     db.session.commit()
     return jsonify({"message": "deleted"})
